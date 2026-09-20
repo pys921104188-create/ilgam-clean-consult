@@ -77,6 +77,7 @@ for (const form of document.querySelectorAll('form')) {
     hidden(form, '신청번호', id);
     hidden(form, '제출 시각', new Date().toISOString());
     hidden(form, '동의 안내 버전', '2026-09-20');
+    hidden(form, '_url', location.origin + location.pathname);
     const next = new URL('thanks.html', location.href);
     next.search = new URLSearchParams({step, rid:id}).toString();
     hidden(form, '_next', next.href);
