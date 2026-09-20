@@ -1,6 +1,6 @@
 # 일감 건물 청소 상담
 
-`consult.ilgam.shop`에 게시하는 정적 상담 신청 페이지입니다. 이 저장소는 `pys921104188-create` GitHub 계정에서 관리합니다. `main` 브랜치 루트의 파일이 GitHub Pages로 자동 배포됩니다. `CNAME` 파일과 Cafe24의 `consult` CNAME 레코드는 이 주소 연결에 필요합니다. 기존 `ilgam.shop` 및 `www.ilgam.shop` 설정은 이 저장소와 별개입니다.
+`consult.ilgam.shop`에 게시하는 정적 상담 신청 페이지입니다. 이 저장소는 `pys921104188-create` GitHub 계정에서 관리합니다. `main` 브랜치 루트의 파일이 GitHub Pages로 자동 배포됩니다. `CNAME` 파일과 Cafe24의 `consult` CNAME 레코드는 이 주소 연결에 필요합니다. Cafe24의 `_github-pages-challenge-pys921104188-create.consult` TXT 레코드는 이 계정의 도메인 소유 확인을 유지하므로 삭제하지 마세요. 기존 `ilgam.shop` 및 `www.ilgam.shop` 설정은 이 저장소와 별개입니다.
 
 1차 간편문의는 연락처와 개인정보 수집·이용 동의가 필수이며 성함과 지역은 선택입니다. 2차 상세정보는 이름, 주소, 연락처, 건물 규모와 동의가 필수입니다. 제출은 FormSubmit을 통해 `pys921104188@gmail.com`으로 전달하도록 구성되어 있습니다.
 
