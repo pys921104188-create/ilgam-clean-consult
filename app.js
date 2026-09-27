@@ -2,6 +2,7 @@
 // After email activation, replace the email with the random endpoint from FormSubmit.
 const FORM_ENDPOINT = 'https://formsubmit.co/pys921104188@gmail.com';
 const STORAGE_KEY = 'ilgam-request-id'; // No contact information is saved in web storage.
+const SUBMIT_MARKER_KEY = 'ilgam-submit-pending'; // Step only; no personal information.
 const $ = (s) => document.querySelector(s);
 const idPattern = /^IG-[a-f0-9-]{36}$/;
 function getId() {
@@ -14,6 +15,13 @@ function hidden(form, name, value) {
   let input = Array.from(form.elements).find(el => el.name === name);
   if (!input) { input = document.createElement('input'); input.type = 'hidden'; input.name = name; form.append(input); }
   input.value = value;
+}
+function resetSubmission(form) {
+  form.dataset.submitting = 'false';
+  form.removeAttribute('aria-busy');
+  const button = form.querySelector('[type="submit"]');
+  button.disabled = false;
+  button.textContent = button.dataset.idleLabel || (form.id === 'quick-form' ? '상담 신청하기 ↗' : '상세정보 전달하기 ↗');
 }
 function phoneError(input) {
   const raw = input.value.trim();
@@ -61,6 +69,7 @@ for (const form of document.querySelectorAll('form')) {
   });
   form.addEventListener('submit', event => {
     const error = form.querySelector('.error'); error.hidden = true;
+    if (form.dataset.submitting === 'true') { event.preventDefault(); return; }
     if (!['https:', 'http:'].includes(location.protocol)) {
       event.preventDefault(); error.textContent = '신청은 웹 주소에서 가능해요. 운영자는 안내서에 따라 페이지를 먼저 배포해 주세요.'; error.hidden = false; return;
     }
@@ -83,15 +92,36 @@ for (const form of document.querySelectorAll('form')) {
     hidden(form, '_next', next.href);
     // Native POST preserves the provider's CAPTCHA and file-upload flow.
     // The server, not this script, redirects to thanks.html after handling the submission.
+    form.dataset.submitting = 'true';
+    form.setAttribute('aria-busy', 'true');
+    try { sessionStorage.setItem(SUBMIT_MARKER_KEY, step); } catch (_) {}
     const button = form.querySelector('[type="submit"]');
     button.disabled = true; button.textContent = '스팸 방지 확인으로 이동 중…';
-    setTimeout(() => { button.disabled = false; button.textContent = step === 'quick' ? '상담 신청하기 ↗' : '상세정보 전달하기 ↗'; }, 15000);
+    setTimeout(() => {
+      if (!document.contains(form)) return;
+      resetSubmission(form);
+      error.textContent = '스팸 방지 확인 화면으로 이동하지 않았다면 인터넷 연결을 확인하고 다시 시도해 주세요.';
+      error.hidden = false;
+    }, 15000);
   });
 }
-window.addEventListener('pageshow', () => {
+window.addEventListener('pageshow', event => {
   for (const form of document.querySelectorAll('form')) {
-    const button = form.querySelector('[type="submit"]'); button.disabled = false;
-    button.textContent = form.id === 'quick-form' ? '상담 신청하기 ↗' : '상세정보 전달하기 ↗';
+    resetSubmission(form);
+  }
+  const navigation = performance.getEntriesByType('navigation')[0];
+  const returnedBeforeCompletion = event.persisted || navigation?.type === 'back_forward';
+  let pendingStep = '';
+  try { pendingStep = sessionStorage.getItem(SUBMIT_MARKER_KEY) || ''; } catch (_) {}
+  if (returnedBeforeCompletion && pendingStep) {
+    const form = pendingStep === 'detail' ? $('#detail-form') : $('#quick-form');
+    const error = form?.querySelector('.error');
+    if (error) {
+      error.textContent = '스팸 방지 확인 또는 전송이 끝나지 않았습니다. 내용을 확인하고 다시 시도해 주세요.';
+      error.hidden = false;
+      error.scrollIntoView({block: 'center'});
+    }
+    try { sessionStorage.removeItem(SUBMIT_MARKER_KEY); } catch (_) {}
   }
 });
 const dialog = $('#privacy-dialog');
@@ -100,6 +130,7 @@ for (const button of document.querySelectorAll('.dialog-close')) button.addEvent
 if ($('#success-title')) {
   const id = params.get('rid'); const step = params.get('step');
   if (idPattern.test(id) && ['quick','detail'].includes(step)) {
+    try { sessionStorage.removeItem(SUBMIT_MARKER_KEY); } catch (_) {}
     $('#success-title').textContent = step === 'detail' ? '상세정보까지 전달했어요.' : '일감이가 전문가에게 전달했어요.';
     $('#success-description').textContent = '확인 후 연락드릴게요.';
     $('#request-id').textContent = `신청번호 ${id}`;
