@@ -14,7 +14,7 @@ FormSubmit 수신함 활성화 및 실제 이메일 도착 검증이 끝나기 �
 
 페이지를 수정할 때는 이 저장소에서 파일을 바꾸고 `main`에 반영하면 됩니다. FormSubmit 전송 주소는 `index.html`의 두 폼과 `app.js`에 있으므로 이메일 주소를 바꿀 경우 세 곳을 함께 수정하고 새 주소로 다시 활성화해야 합니다. `_url` 필드는 FormSubmit이 신청 페이지의 출처를 확인하는 데 필요합니다. 사이트 주소를 바꾸면 `index.html`의 두 `_url` 값도 바꿔 주세요.
 
-로컬 검증은 저장소 루트에서 `python -m http.server 8080 --bind 127.0.0.1`을 실행한 뒤 다른 터미널에서 `node check.cjs`로 수행합니다. Windows에서는 설치된 Edge를 사용합니다.
+로컬 검증은 저장소 루트에서 `python -m http.server 8080 --bind 127.0.0.1`을 실행한 뒤 다른 터미널에서 `node check.cjs`로 수행합니다. 운영 주소 검증은 PowerShell에서 `$env:BASE_URL='https://consult.ilgam.shop'; node check.cjs`로 수행합니다. Windows에서는 설치된 Edge를 사용하며 FormSubmit 요청은 테스트에서 가로채므로 검사 중 실제 메일은 전송하지 않습니다.
 
 ## 2026-09-28 전송 점검
 

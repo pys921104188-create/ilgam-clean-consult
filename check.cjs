@@ -1,5 +1,6 @@
 const { chromium } = require('C:/Users/pys92/.cache/codex-runtimes/codex-primary-runtime/dependencies/node/node_modules/playwright');
 const assert = require('node:assert/strict');
+const baseUrl = (process.env.BASE_URL || 'http://127.0.0.1:8080').replace(/\/$/, '');
 
 (async () => {
   const browser = await chromium.launch({ headless: true, channel: 'msedge' });
@@ -12,7 +13,7 @@ const assert = require('node:assert/strict');
     await route.fulfill({ status: 200, contentType: 'text/html', body: '<h1>Almost There</h1>' });
   });
 
-  await page.goto('http://127.0.0.1:8080/?step=detail&rid=IG-12345678-1234-1234-1234-123456789abc');
+  await page.goto(`${baseUrl}/?step=detail&rid=IG-12345678-1234-1234-1234-123456789abc`);
   const submit = page.locator('#detail-form [type="submit"]');
   await submit.click();
   assert.equal(requests, 0, '필수 항목 누락은 외부 전송 전에 차단해야 합니다.');
@@ -32,7 +33,7 @@ const assert = require('node:assert/strict');
 
   for (const width of [320, 390, 768, 1440]) {
     await page.setViewportSize({ width, height: 900 });
-    await page.goto('http://127.0.0.1:8080/');
+    await page.goto(`${baseUrl}/`);
     assert.equal(await page.evaluate(() => document.documentElement.scrollWidth <= innerWidth), true, `가로 넘침 ${width}px`);
   }
 
